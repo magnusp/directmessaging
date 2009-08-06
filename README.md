@@ -1,1 +1,1 @@
-See wiki
+[See wiki](http://wiki.github.com/c0dem4gnetic/directmessaging)
