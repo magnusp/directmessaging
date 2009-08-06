@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title><!-- Insert your title here --></title>
+    <script type="text/javascript" src="js/swfobject/swfobject.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    
+    <script type="text/javascript">
+    var directmessaging;
+    $(document).ready(function(){
+        var flashVars = {
+            policyserveruri: "xmlsocket://localhost:33333",
+            brokerhost: "localhost",
+            brokerport: 61613
+        }
+        $("#btnSend").click(function() {
+            var text_to_send = $("#tiOutgoing").attr("value");
+            if(text_to_send != "") {
+                directmessaging.directmessaging_send($("#tiOutgoing").attr("value"));
+                $("#output").append("<li>Sent: " + text_to_send + "</li>");
+            }            
+        });
+        swfobject.embedSWF("DirectMessagingBridge.swf", "directmessaging", "1", "1", "10.0.0","", flashVars);
+        directmessaging = document.getElementById("directmessaging");
+    });
+
+    function messageCallback(payload) {
+        $("#output").append("<li>Got: " + payload + "</li>");
+    }
+        	
+    function doclick() {
+    }
+
+    </script>
+
+</head>
+<body>
+    <div id="directmessaging" style="width: 1px;height: 1px">
+      <p>Alternative content</p>
+    </div>
+    <div>
+        <input type="text" id="tiOutgoing" size="30"/><br/>
+        <input type="button" id="btnSend" value="send!"/>
+    </div>
+    
+    <ul id="output">
+    </ul>
+    
+</body>
+</html>

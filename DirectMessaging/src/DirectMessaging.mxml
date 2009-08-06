@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" xmlns:s="library://ns.adobe.com/flex/spark" xmlns:mx="library://ns.adobe.com/flex/halo" height="258" width="323">
+	<fx:Script>
+	<![CDATA[
+		import org.codehaus.stomp.event.MessageEvent;
+		import org.codehaus.stomp.event.ConnectedEvent;
+		import org.codehaus.stomp.Stomp;
+		private var stomp:Stomp = new Stomp();
+		
+		protected function btnConnect_clickHandler(event:MouseEvent):void
+		{
+			stomp.addEventListener(ConnectedEvent.CONNECTED, onConnected);
+			stomp.connect(tiStompBroker.text);
+		}
+		
+		private function onConnected(event:ConnectedEvent):void {
+			tiOutgoing.enabled = true;
+			btnSend.enabled = true;
+			stomp.addEventListener(MessageEvent.MESSAGE, onMessage);
+			stomp.subscribe("/queue/directmessaging-incoming");
+		}
+		
+		private function onMessage(event:MessageEvent):void {
+			taIncoming.text += "Got: " + event.message.body.toString() + "\n";
+		}
+		
+		protected function btnSend_clickHandler(event:MouseEvent):void
+		{
+			if(tiOutgoing.text.length > 0) {
+				stomp.sendTextMessage("/topic/directmessaging-outgoing", tiOutgoing.text);
+				taIncoming.text += "Sent: " + tiOutgoing.text + "\n";
+			}
+		}
+	]]>
+	</fx:Script>
+	
+	<mx:Form y="7" left="10">
+		<mx:FormItem label="Broker host">
+			<s:TextInput text="localhost" id="tiStompBroker"/>
+		</mx:FormItem>
+		<mx:FormItem>
+			<s:Button label="Connect" id="btnConnect" click="btnConnect_clickHandler(event)"/>
+		</mx:FormItem>
+	</mx:Form>
+	<s:TextArea height="89" width="263" editable="false" id="taIncoming" y="98" left="10"/>
+	<s:TextInput y="199" enabled="false" id="tiOutgoing" left="10"/>
+	<s:Button x="203" y="199" label="Send" id="btnSend" enabled="false" click="btnSend_clickHandler(event)"/>
+</s:WindowedApplication>
